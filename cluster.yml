@@ -1,0 +1,42 @@
+# cluster.yml — Multi-machine Splunk deployment configuration
+#
+# "local:" lists roles to start via docker compose on THIS machine.
+# "remote:" defines external cluster members on OTHER machines.
+# A role must appear in at least one section, or a warning is raised.
+# (cluster-master and indexer are required — missing either is a fatal error.)
+#
+# Available roles:
+#   search-head        Splunk search head (web UI on port 8000)
+#   indexer            Splunk indexer (receives and indexes data)
+#   cluster-master     Manages indexer replication
+#   license-master     Serves licenses to all components
+#   deployment-server  Pushes configs to forwarders
+#   forwarder          Forwards data to indexers (syslog, files, etc.)
+
+# Roles to start locally via docker compose on this machine.
+# Omit a role here to make it remote-only (must be defined in "remote:" below).
+local:
+  - search-head
+  - cluster-master
+  - license-master
+  - deployment-server
+  - forwarder
+
+# External cluster members on OTHER machines.
+# Use a list for multiple instances of the same role (horizontal scaling).
+# Each entry requires "host". Optional: "port" (default 8089),
+# "forwarding-port" (default 9997) — reserved for future use.
+#
+# Examples:
+#   single remote indexer:
+#     indexer:
+#       host: 10.0.0.2
+#
+#   multiple remote indexers:
+#     indexer:
+#       - host: 10.0.0.2
+#       - host: 10.0.0.3
+#
+#   remote license master:
+#     license-master:
+#       host: 10.0.0.1

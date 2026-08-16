@@ -1,0 +1,30 @@
+services:
+  indexer:
+    image: splunk/splunk:latest
+    platform: linux/amd64
+    container_name: splunk-indexer
+    hostname: indexer
+    environment:
+      - SPLUNK_ROLE=splunk_indexer
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_GENERAL_TERMS=--accept-sgt-current-at-splunk-com
+      - SPLUNK_PASSWORD=changeme
+      - SPLUNK_LICENSE_URI=/licenses/license.txt
+      - SPLUNK_CLUSTER_MASTER_URL=${SPLUNK_CLUSTER_MASTER_URL:-splunk-cluster-master}
+      - SPLUNK_INDEXER_URL=${SPLUNK_INDEXER_URL:-splunk-indexer}
+      - SPLUNK_LICENSE_MASTER_URL=${SPLUNK_LICENSE_MASTER_URL:-splunk-license-master}
+      - SPLUNK_DEPLOYMENT_SERVER=${SPLUNK_DEPLOYMENT_SERVER:-splunk-deployment-server}
+    ports:
+      - "8088:8088"
+      - "9997:9997"
+    volumes:
+      - ../license.txt:/licenses/license.txt:ro
+      - ./example.log:/var/log/example/example.log:ro
+      - ./splunk-configs/indexer:/opt/splunk/etc/apps/custom-inputs
+    networks:
+      - splunk-net
+
+networks:
+  splunk-net:
+    name: splunk-net
+    driver: bridge

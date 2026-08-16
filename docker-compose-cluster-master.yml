@@ -1,0 +1,25 @@
+services:
+  cluster-master:
+    image: splunk/splunk:latest
+    platform: linux/amd64
+    container_name: splunk-cluster-master
+    hostname: cluster-master
+    environment:
+      - SPLUNK_ROLE=splunk_cluster_master
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_GENERAL_TERMS=--accept-sgt-current-at-splunk-com
+      - SPLUNK_PASSWORD=changeme
+      - SPLUNK_LICENSE_URI=/licenses/license.txt
+      - SPLUNK_CLUSTER_MASTER_URL=${SPLUNK_CLUSTER_MASTER_URL:-splunk-cluster-master}
+      - SPLUNK_INDEXER_URL=${SPLUNK_INDEXER_URL:-splunk-indexer}
+      - SPLUNK_LICENSE_MASTER_URL=${SPLUNK_LICENSE_MASTER_URL:-splunk-license-master}
+      - SPLUNK_DEPLOYMENT_SERVER=${SPLUNK_DEPLOYMENT_SERVER:-splunk-deployment-server}
+    volumes:
+      - ../license.txt:/licenses/license.txt:ro
+    networks:
+      - splunk-net
+
+networks:
+  splunk-net:
+    name: splunk-net
+    driver: bridge
